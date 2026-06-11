@@ -1,8 +1,18 @@
 {
-  "data": {},
+  "data": {
+    "2026": {
+      "5": {
+        "11": {
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät"
+        }
+      }
+    }
+  },
   "settings": {
     "shifts": {
-      "Fr\u00fch": {
+      "Früh": {
         "start": "09:45",
         "end": "15:15",
         "pause": 0.5
@@ -12,12 +22,12 @@
         "end": "16:00",
         "pause": 0.5
       },
-      "Sp\u00e4t": {
+      "Spät": {
         "start": "13:00",
         "end": "18:15",
         "pause": 0.5
       }
     }
   },
-  "saved": "2026-01-01T00:00:00.000Z"
+  "saved": "2026-06-11T20:36:39.098Z"
 }
