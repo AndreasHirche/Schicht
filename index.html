@@ -160,6 +160,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
     </div>
     <div class="topbar-actions">
       <button class="icon-btn" title="Drucken" onclick="openPrint()">🖨️</button>
+      <button class="icon-btn" title="Daten exportieren" onclick="exportData()">⬇️</button>
+      <button class="icon-btn" title="Daten importieren" onclick="document.getElementById('importFile').click()">⬆️</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
       <button class="icon-btn" title="Einstellungen" onclick="openSettings()">⚙️</button>
     </div>
   </div>
@@ -486,6 +489,32 @@ ${PERSONS.map(p=>`<td colspan="3">${fmt(Math.round(tot[p].u*3.33*100)/100)}</td>
 ${PERSONS.map(p=>`<td colspan="3" style="font-size:8pt">${fmt(Math.round(tot[p].w*100)/100)}</td>`).join('')}<td></td></tr>
 </tfoot>
 </table>`;
+}
+
+// ── Export / Import ───────────────────────────────────────────────────────
+function exportData(){
+  const payload={data,settings,exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href=url;
+  a.download='schichtplan_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'.json';
+  a.click();URL.revokeObjectURL(url);
+}
+function importData(evt){
+  const f=evt.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=function(e){
+    try{
+      const p=JSON.parse(e.target.result);
+      if(p.data)data=p.data;
+      if(p.settings)settings=p.settings;
+      saveStorage();renderCalendar();
+      alert('✅ Importiert: '+Object.keys(data).length+' Jahr(e) geladen.');
+    }catch(ex){alert('❌ Fehler: '+ex.message);}
+  };
+  r.readAsText(f);evt.target.value='';
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
