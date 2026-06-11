@@ -38,6 +38,11 @@
           "Silke": "Mittel",
           "Martina": "Früh",
           "Sandra": "Früh"
+        },
+        "3": {
+          "Silke": "Mittel",
+          "Martina": "Früh",
+          "Sandra": "Früh"
         }
       }
     }
@@ -61,5 +66,5 @@
       }
     }
   },
-  "saved": "2026-06-11T20:48:47.438Z"
+  "saved": "2026-06-11T20:48:48.486Z"
 }
