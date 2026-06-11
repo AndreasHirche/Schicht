@@ -557,22 +557,22 @@ async function syncToGitHub(){
   const token=document.getElementById('ghToken').value.trim();
   if(!token){setSyncStatus('⚠ Token fehlt.',false);return;}
   localStorage.setItem('schicht_gh_token',token);
-  setSyncStatus('⏳ Speichere auf GitHub…');
+  setSyncStatus('⏳ Speichere via GitHub Action…');
   try{
-    // get sha
-    const rGet=await fetch(GH_API,{headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json'}});
-    if(rGet.ok){const dg=await rGet.json();ghFileSha=dg.sha;}
     const payload={data,settings,saved:new Date().toISOString()};
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-    const body={message:'Update Schichtplan data',content};
-    if(ghFileSha) body.sha=ghFileSha;
-    const rPut=await fetch(GH_API,{method:'PUT',
+    const b64=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+    // Trigger workflow_dispatch — works with gho_ tokens that have workflow scope
+    const WORKFLOW_URL='https://api.github.com/repos/'+GH_REPO+'/actions/workflows/save-data.yml/dispatches';
+    const r=await fetch(WORKFLOW_URL,{method:'POST',
       headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify(body)});
-    if(!rPut.ok){const e=await rPut.json();throw new Error(e.message||'HTTP '+rPut.status);}
-    const d2=await rPut.json();ghFileSha=d2.content.sha;
-    setSyncStatus('✅ Gespeichert ('+new Date().toLocaleTimeString()+').',true);
-    document.getElementById('syncBtn').style.color='#22c55e';
+      body:JSON.stringify({ref:'main',inputs:{payload:b64}})});
+    if(r.status===204){
+      setSyncStatus('✅ Gespeichert — GitHub Action läuft (~30s bis sync).',true);
+      document.getElementById('syncBtn').style.color='#22c55e';
+    } else {
+      const e=await r.json().catch(()=>({}));
+      throw new Error(e.message||'HTTP '+r.status);
+    }
   }catch(e){setSyncStatus('❌ Fehler: '+e.message,false);}
 }
 
