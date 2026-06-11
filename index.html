@@ -163,6 +163,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
       <button class="icon-btn" title="Daten exportieren" onclick="exportData()">⬇️</button>
       <button class="icon-btn" title="Daten importieren" onclick="document.getElementById('importFile').click()">⬆️</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="icon-btn" id="syncBtn" title="GitHub Sync" onclick="openSyncSettings()">☁️</button>
       <button class="icon-btn" title="Einstellungen" onclick="openSettings()">⚙️</button>
     </div>
   </div>
@@ -187,6 +188,29 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
       <button class="btn-cancel" onclick="closeDay()">Abbrechen</button>
       <button class="btn-clear" onclick="clearDay()">Löschen</button>
       <button class="btn-save" onclick="saveDay()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- SYNC SETTINGS MODAL -->
+<div class="modal" id="syncModal" onclick="if(event.target===this)closeSyncSettings()">
+  <div class="modal-box">
+    <div class="modal-title">☁️ GitHub Sync</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px;line-height:1.5">
+      Daten werden in <code style="color:#22d3ee">AndreasHirche/Schicht</code> als <code style="color:#22d3ee">data.json</code> gespeichert — auf allen Geräten automatisch synchron.
+    </p>
+    <div class="setting-row">
+      <span class="setting-lbl" style="width:40px">Token</span>
+      <input class="setting-time" type="password" id="ghToken" placeholder="GitHub Personal Access Token (ghp_...)" style="flex:1;font-family:monospace;font-size:.7rem">
+    </div>
+    <div style="font-size:.68rem;color:#475569;margin:4px 0 12px 48px">
+      Erstellen unter: github.com → Settings → Developer settings → Personal access tokens (classic) → Scope: <b>repo</b>
+    </div>
+    <div style="font-size:.72rem;margin-bottom:8px" id="syncStatus"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" style="flex:1" onclick="closeSyncSettings()">Abbrechen</button>
+      <button class="btn-save" style="flex:1;background:#22c55e" onclick="syncFromGitHub()">⬇ Laden</button>
+      <button class="btn-save" style="flex:1" onclick="syncToGitHub()">⬆ Speichern</button>
     </div>
   </div>
 </div>
@@ -240,6 +264,7 @@ function loadStorage(){
 function saveStorage(){
   localStorage.setItem('schicht_data',JSON.stringify(data));
   localStorage.setItem('schicht_settings',JSON.stringify(settings));
+  localStorage.setItem('schicht_saved',new Date().toISOString());
 }
 
 // ── Calendar ──────────────────────────────────────────────────────────────
@@ -489,6 +514,99 @@ ${PERSONS.map(p=>`<td colspan="3" style="font-size:8pt">${fmt(Math.round(tot[p].
 </table>`;
 }
 
+// ── GitHub Sync ───────────────────────────────────────────────────────────
+const GH_REPO  = 'AndreasHirche/Schicht';
+const GH_FILE  = 'data.json';
+const GH_API   = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+let   ghFileSha = null;   // needed for update (PUT)
+
+function getToken(){ return localStorage.getItem('schicht_gh_token')||''; }
+
+function openSyncSettings(){
+  document.getElementById('ghToken').value = getToken();
+  document.getElementById('syncStatus').textContent = '';
+  document.getElementById('syncModal').classList.add('show');
+}
+function closeSyncSettings(){ document.getElementById('syncModal').classList.remove('show'); }
+
+function setSyncStatus(msg, ok){
+  const el = document.getElementById('syncStatus');
+  el.textContent = msg;
+  el.style.color = ok===false ? '#f87171' : ok===true ? '#4ade80' : '#94a3b8';
+}
+
+async function syncFromGitHub(){
+  const token = document.getElementById('ghToken').value.trim();
+  if(!token){ setSyncStatus('⚠ Token fehlt.',false); return; }
+  localStorage.setItem('schicht_gh_token', token);
+  setSyncStatus('⏳ Lade von GitHub…');
+  try{
+    const r = await fetch(GH_API, { headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }});
+    if(r.status===404){ setSyncStatus('ℹ Noch keine Daten auf GitHub — bitte erst ⬆ Speichern.',null); return; }
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    ghFileSha = d.sha;
+    const payload = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    if(payload.data)    data = payload.data;
+    if(payload.settings)settings = payload.settings;
+    saveStorage();
+    renderCalendar();
+    setSyncStatus('✅ Geladen ('+new Date().toLocaleTimeString()+').',true);
+    document.getElementById('syncBtn').title='☁️ Sync — zuletzt geladen '+new Date().toLocaleTimeString();
+  }catch(e){ setSyncStatus('❌ Fehler: '+e.message,false); }
+}
+
+async function syncToGitHub(){
+  const token = document.getElementById('ghToken').value.trim();
+  if(!token){ setSyncStatus('⚠ Token fehlt.',false); return; }
+  localStorage.setItem('schicht_gh_token', token);
+  setSyncStatus('⏳ Speichere auf GitHub…');
+  try{
+    // get current sha if we don't have it
+    if(!ghFileSha){
+      const r = await fetch(GH_API, { headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }});
+      if(r.ok){ const d=await r.json(); ghFileSha=d.sha; }
+    }
+    const payload = { data, settings, saved: new Date().toISOString() };
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+    const body = { message:'Update Schichtplan data', content };
+    if(ghFileSha) body.sha = ghFileSha;
+    const r2 = await fetch(GH_API,{
+      method:'PUT',
+      headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!r2.ok){ const e=await r2.json(); throw new Error(e.message||'HTTP '+r2.status); }
+    const d2 = await r2.json();
+    ghFileSha = d2.content.sha;
+    setSyncStatus('✅ Gespeichert ('+new Date().toLocaleTimeString()+').',true);
+  }catch(e){ setSyncStatus('❌ Fehler: '+e.message,false); }
+}
+
+// Auto-load from GitHub on startup if token is set
+async function autoSync(){
+  const token = getToken();
+  if(!token) return;
+  try{
+    const r = await fetch(GH_API, { headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }});
+    if(!r.ok) return;
+    const d = await r.json();
+    ghFileSha = d.sha;
+    const payload = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    // only overwrite if github data is newer
+    const ghSaved = payload.saved ? new Date(payload.saved) : new Date(0);
+    const localSaved = localStorage.getItem('schicht_saved') ? new Date(localStorage.getItem('schicht_saved')) : new Date(0);
+    if(ghSaved > localSaved){
+      if(payload.data)    data = payload.data;
+      if(payload.settings)settings = payload.settings;
+      saveStorage();
+      renderCalendar();
+      document.getElementById('syncBtn').style.color='#22c55e';
+      document.getElementById('syncBtn').title='☁️ Sync — auto geladen '+new Date().toLocaleTimeString();
+    }
+  }catch(e){ /* silent */ }
+}
+
 // ── Export / Import ───────────────────────────────────────────────────────
 function exportData(){
   const payload={data,settings,exported:new Date().toISOString()};
@@ -536,6 +654,7 @@ loadStorage();
 const now=new Date();
 curYear=now.getFullYear();curMonth=now.getMonth();
 renderCalendar();
+autoSync();  // load from GitHub if token set
 </script>
 </body>
 </html>
