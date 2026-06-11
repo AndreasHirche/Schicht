@@ -515,96 +515,82 @@ ${PERSONS.map(p=>`<td colspan="3" style="font-size:8pt">${fmt(Math.round(tot[p].
 }
 
 // ── GitHub Sync ───────────────────────────────────────────────────────────
-const GH_REPO  = 'AndreasHirche/Schicht';
-const GH_FILE  = 'data.json';
-const GH_API   = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
-let   ghFileSha = null;   // needed for update (PUT)
+const GH_REPO = 'AndreasHirche/Schicht';
+const GH_FILE = 'data.json';
+const GH_API  = 'https://api.github.com/repos/'+GH_REPO+'/contents/'+GH_FILE;
+const GH_RAW  = 'https://raw.githubusercontent.com/'+GH_REPO+'/main/'+GH_FILE;
+let ghFileSha = null;
 
 function getToken(){ return localStorage.getItem('schicht_gh_token')||''; }
 
 function openSyncSettings(){
-  document.getElementById('ghToken').value = getToken();
-  document.getElementById('syncStatus').textContent = '';
+  document.getElementById('ghToken').value=getToken();
+  document.getElementById('syncStatus').textContent='';
   document.getElementById('syncModal').classList.add('show');
 }
 function closeSyncSettings(){ document.getElementById('syncModal').classList.remove('show'); }
-
-function setSyncStatus(msg, ok){
-  const el = document.getElementById('syncStatus');
-  el.textContent = msg;
-  el.style.color = ok===false ? '#f87171' : ok===true ? '#4ade80' : '#94a3b8';
+function setSyncStatus(msg,ok){
+  const el=document.getElementById('syncStatus');
+  el.textContent=msg;
+  el.style.color=ok===false?'#f87171':ok===true?'#4ade80':'#94a3b8';
 }
 
 async function syncFromGitHub(){
-  const token = document.getElementById('ghToken').value.trim();
-  if(!token){ setSyncStatus('⚠ Token fehlt.',false); return; }
-  localStorage.setItem('schicht_gh_token', token);
+  const token=document.getElementById('ghToken').value.trim();
+  if(token) localStorage.setItem('schicht_gh_token',token);
   setSyncStatus('⏳ Lade von GitHub…');
   try{
-    const r = await fetch(GH_API, { headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }});
-    if(r.status===404){ setSyncStatus('ℹ Noch keine Daten auf GitHub — bitte erst ⬆ Speichern.',null); return; }
+    // Read via raw URL — no auth needed, no CORS block
+    const r=await fetch(GH_RAW+'?t='+Date.now());
+    if(r.status===404){setSyncStatus('ℹ Noch keine Daten auf GitHub.',null);return;}
     if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-    ghFileSha = d.sha;
-    const payload = JSON.parse(atob(d.content.replace(/\n/g,'')));
-    if(payload.data)    data = payload.data;
-    if(payload.settings)settings = payload.settings;
-    saveStorage();
-    renderCalendar();
+    const payload=await r.json();
+    if(payload.data)    data=payload.data;
+    if(payload.settings)settings=payload.settings;
+    saveStorage();renderCalendar();
     setSyncStatus('✅ Geladen ('+new Date().toLocaleTimeString()+').',true);
-    document.getElementById('syncBtn').title='☁️ Sync — zuletzt geladen '+new Date().toLocaleTimeString();
-  }catch(e){ setSyncStatus('❌ Fehler: '+e.message,false); }
+    document.getElementById('syncBtn').style.color='#22c55e';
+  }catch(e){setSyncStatus('❌ Lade-Fehler: '+e.message,false);}
 }
 
 async function syncToGitHub(){
-  const token = document.getElementById('ghToken').value.trim();
-  if(!token){ setSyncStatus('⚠ Token fehlt.',false); return; }
-  localStorage.setItem('schicht_gh_token', token);
+  const token=document.getElementById('ghToken').value.trim();
+  if(!token){setSyncStatus('⚠ Token fehlt.',false);return;}
+  localStorage.setItem('schicht_gh_token',token);
   setSyncStatus('⏳ Speichere auf GitHub…');
   try{
-    // get current sha if we don't have it
-    if(!ghFileSha){
-      const r = await fetch(GH_API, { headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }});
-      if(r.ok){ const d=await r.json(); ghFileSha=d.sha; }
-    }
-    const payload = { data, settings, saved: new Date().toISOString() };
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-    const body = { message:'Update Schichtplan data', content };
-    if(ghFileSha) body.sha = ghFileSha;
-    const r2 = await fetch(GH_API,{
-      method:'PUT',
-      headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
-      body: JSON.stringify(body)
-    });
-    if(!r2.ok){ const e=await r2.json(); throw new Error(e.message||'HTTP '+r2.status); }
-    const d2 = await r2.json();
-    ghFileSha = d2.content.sha;
+    // get sha
+    const rGet=await fetch(GH_API,{headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json'}});
+    if(rGet.ok){const dg=await rGet.json();ghFileSha=dg.sha;}
+    const payload={data,settings,saved:new Date().toISOString()};
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+    const body={message:'Update Schichtplan data',content};
+    if(ghFileSha) body.sha=ghFileSha;
+    const rPut=await fetch(GH_API,{method:'PUT',
+      headers:{Authorization:'token '+token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)});
+    if(!rPut.ok){const e=await rPut.json();throw new Error(e.message||'HTTP '+rPut.status);}
+    const d2=await rPut.json();ghFileSha=d2.content.sha;
     setSyncStatus('✅ Gespeichert ('+new Date().toLocaleTimeString()+').',true);
-  }catch(e){ setSyncStatus('❌ Fehler: '+e.message,false); }
+    document.getElementById('syncBtn').style.color='#22c55e';
+  }catch(e){setSyncStatus('❌ Fehler: '+e.message,false);}
 }
 
-// Auto-load from GitHub on startup if token is set
 async function autoSync(){
-  const token = getToken();
-  if(!token) return;
   try{
-    const r = await fetch(GH_API, { headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }});
+    const r=await fetch(GH_RAW+'?t='+Date.now());
     if(!r.ok) return;
-    const d = await r.json();
-    ghFileSha = d.sha;
-    const payload = JSON.parse(atob(d.content.replace(/\n/g,'')));
-    // only overwrite if github data is newer
-    const ghSaved = payload.saved ? new Date(payload.saved) : new Date(0);
-    const localSaved = localStorage.getItem('schicht_saved') ? new Date(localStorage.getItem('schicht_saved')) : new Date(0);
-    if(ghSaved > localSaved){
-      if(payload.data)    data = payload.data;
-      if(payload.settings)settings = payload.settings;
-      saveStorage();
-      renderCalendar();
+    const payload=await r.json();
+    const ghSaved=payload.saved?new Date(payload.saved):new Date(0);
+    const localSaved=localStorage.getItem('schicht_saved')?new Date(localStorage.getItem('schicht_saved')):new Date(0);
+    if(ghSaved>localSaved){
+      if(payload.data)    data=payload.data;
+      if(payload.settings)settings=payload.settings;
+      saveStorage();renderCalendar();
       document.getElementById('syncBtn').style.color='#22c55e';
-      document.getElementById('syncBtn').title='☁️ Sync — auto geladen '+new Date().toLocaleTimeString();
+      document.getElementById('syncBtn').title='☁️ Auto-sync: '+new Date().toLocaleTimeString();
     }
-  }catch(e){ /* silent */ }
+  }catch(e){}
 }
 
 // ── Export / Import ───────────────────────────────────────────────────────
