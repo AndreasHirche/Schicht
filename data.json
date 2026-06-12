@@ -257,5 +257,41 @@
       }
     }
   },
-  "saved": "2026-06-12T14:08:56.357Z"
+  "saved": "2026-06-12T14:08:56.357Z",
+  "settings": {
+    "shifts": {
+      "Früh": {
+        "start": "09:45",
+        "end": "15:15",
+        "pause": 0.5
+      },
+      "Mittel": {
+        "start": "09:45",
+        "end": "16:00",
+        "pause": 0.5
+      },
+      "Spät": {
+        "start": "13:00",
+        "end": "18:15",
+        "pause": 0.5
+      }
+    },
+    "persons": {
+      "Silke": {
+        "name": "Bunzel-Hirche, Silke",
+        "vertr": 87,
+        "delta": "+51,3"
+      },
+      "Martina": {
+        "name": "Weger, Martina",
+        "vertr": 87,
+        "delta": "+27,75"
+      },
+      "Sandra": {
+        "name": "Jacob, Sandra",
+        "vertr": 87,
+        "delta": ""
+      }
+    }
+  }
 }
