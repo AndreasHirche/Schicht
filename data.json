@@ -3,9 +3,9 @@
     "2026": {
       "5": {
         "11": {
-          "Silke": "Urlaub",
-          "Martina": "Früh",
-          "Sandra": "Spät"
+          "Silke": null,
+          "Martina": null,
+          "Sandra": null
         },
         "12": {
           "Silke": "Urlaub",
@@ -131,5 +131,5 @@
       }
     }
   },
-  "saved": "2026-06-11T21:35:43.979Z"
+  "saved": "2026-06-12T06:34:36.782Z"
 }
