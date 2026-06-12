@@ -257,7 +257,6 @@
       }
     }
   },
-  "saved": "2026-06-12T14:08:56.357Z",
   "settings": {
     "shifts": {
       "Früh": {
@@ -278,20 +277,21 @@
     },
     "persons": {
       "Silke": {
-        "name": "Bunzel-Hirche, Silke",
+        "name": "Silkeb",
         "vertr": 87,
-        "delta": "+51,3"
+        "delta": ""
       },
       "Martina": {
-        "name": "Weger, Martina",
+        "name": "Martina",
         "vertr": 87,
-        "delta": "+27,75"
+        "delta": ""
       },
       "Sandra": {
-        "name": "Jacob, Sandra",
+        "name": "Sandra",
         "vertr": 87,
         "delta": ""
       }
     }
-  }
+  },
+  "saved": "2026-06-12T14:36:29.548Z"
 }
