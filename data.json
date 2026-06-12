@@ -2,6 +2,16 @@
   "data": {
     "2026": {
       "5": {
+        "3": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": null
+        },
+        "4": {
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät"
+        },
         "5": {
           "Silke": "Urlaub",
           "Martina": "Früh",
@@ -156,5 +166,5 @@
       }
     }
   },
-  "saved": "2026-06-12T06:34:43.239Z"
+  "saved": "2026-06-12T06:34:46.853Z"
 }
