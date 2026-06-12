@@ -243,6 +243,16 @@
           "Silke": "Früh",
           "Martina": "Urlaub",
           "Sandra": "Spät"
+        },
+        "30": {
+          "Silke": "Früh",
+          "Martina": "Urlaub",
+          "Sandra": "Spät"
+        },
+        "31": {
+          "Silke": "Spät",
+          "Martina": "Urlaub",
+          "Sandra": "Früh"
         }
       }
     }
@@ -266,5 +276,5 @@
       }
     }
   },
-  "saved": "2026-06-12T06:39:37.819Z"
+  "saved": "2026-06-12T06:39:48.536Z"
 }
