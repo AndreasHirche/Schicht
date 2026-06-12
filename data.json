@@ -2,10 +2,20 @@
   "data": {
     "2026": {
       "5": {
+        "9": {
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät"
+        },
+        "10": {
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät"
+        },
         "11": {
-          "Silke": null,
-          "Martina": null,
-          "Sandra": null
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät"
         },
         "12": {
           "Silke": "Urlaub",
@@ -131,5 +141,5 @@
       }
     }
   },
-  "saved": "2026-06-12T06:34:40.422Z"
+  "saved": "2026-06-12T06:34:41.917Z"
 }
