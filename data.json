@@ -294,21 +294,24 @@
     },
     "persons": {
       "Silke": {
-        "name": "Name: Bunzel-Hirche, Silke",
+        "name": "Bunzel-Hirche, Silke",
+        "color": "#3b82f6",
         "vertr": 87,
         "delta": "51,3"
       },
       "Martina": {
-        "name": "Name: Weger, Martina",
+        "name": "Weger, Martina",
+        "color": "#f97316",
         "vertr": 87,
         "delta": "+27,75"
       },
       "Sandra": {
-        "name": "Name: Jacob, Sandra",
+        "name": "Jacob, Sandra",
+        "color": "#22c55e",
         "vertr": 87,
         "delta": "0"
       }
     }
   },
-  "saved": "2026-06-13T08:25:42.558Z"
+  "saved": "2026-06-13T08:39:21.575Z"
 }
