@@ -467,8 +467,20 @@
         "color": "#22c55e",
         "vertr": 87,
         "delta": "0"
+      },
+      "Person4": {
+        "name": "",
+        "color": "#a855f7",
+        "vertr": 87,
+        "delta": ""
+      },
+      "Person5": {
+        "name": "",
+        "color": "#ec4899",
+        "vertr": 87,
+        "delta": ""
       }
     }
   },
-  "saved": "2026-06-13T10:03:07.010Z"
+  "saved": "2026-06-13T10:16:41.475Z"
 }
