@@ -68,8 +68,8 @@
           "Sandra": null
         },
         "15": {
-          "Silke": null,
-          "Martina": null,
+          "Silke": "Spät",
+          "Martina": "Früh",
           "Sandra": null
         },
         "16": {
@@ -323,5 +323,5 @@
       }
     }
   },
-  "saved": "2026-06-13T09:57:05.530Z"
+  "saved": "2026-06-13T09:57:12.600Z"
 }
