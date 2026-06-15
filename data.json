@@ -445,6 +445,21 @@
           "Martina": null,
           "Sandra": null
         },
+        "13": {
+          "Silke": "Urlaub",
+          "Martina": null,
+          "Sandra": null
+        },
+        "14": {
+          "Silke": "Urlaub",
+          "Martina": null,
+          "Sandra": null
+        },
+        "15": {
+          "Silke": "Urlaub",
+          "Martina": null,
+          "Sandra": null
+        },
         "19": {
           "Silke": "Urlaub",
           "Martina": null,
@@ -509,5 +524,5 @@
       }
     }
   },
-  "saved": "2026-06-15T12:05:02.806Z"
+  "saved": "2026-06-15T12:05:06.626Z"
 }
