@@ -477,6 +477,11 @@
         }
       },
       "9": {
+        "3": {
+          "Silke": "frei",
+          "Martina": "frei",
+          "Sandra": "frei"
+        },
         "9": {
           "Silke": "frei",
           "Martina": null,
@@ -546,5 +551,5 @@
       }
     }
   },
-  "saved": "2026-06-20T16:59:20.873Z"
+  "saved": "2026-06-23T19:17:51.110Z"
 }
