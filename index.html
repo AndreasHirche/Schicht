@@ -132,7 +132,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
 .ms-zero{color:var(--muted)}
 .cal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
 .day-cell{background:var(--surface);border-radius:6px;padding:4px;
-  border:1px solid var(--border);cursor:pointer;min-height:80px;position:relative}
+  border:1px solid var(--border);cursor:pointer;min-height:80px;position:relative;display:flex;flex-direction:column}
 .day-cell:active{background:rgba(255,255,255,0.07)}
 .day-cell.empty{background:transparent;border-color:transparent;cursor:default}
 .day-cell.sun{display:none}
@@ -144,9 +144,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
 .day-cell.holiday{border:2px solid rgba(120,120,120,0.55)}
 [data-theme="light"] .day-cell.holiday{border-color:rgba(80,80,80,0.5)}
 @media(prefers-color-scheme:light){:root:not([data-theme]) .day-cell.holiday{border-color:rgba(80,80,80,0.5)}}
-.holiday-badge{display:flex;flex-direction:column;align-items:center;line-height:1;margin-bottom:2px}
-.holiday-f{font-size:1.1rem;font-weight:900;color:#f59e0b;line-height:1}
-.holiday-name{font-size:.42rem;color:#94a3b8;text-align:center;word-break:break-word;max-width:100%;line-height:1.2;margin-top:1px}
+.holiday-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:60px;line-height:1}
+.holiday-f{font-size:2.2rem;font-weight:900;color:#f59e0b;line-height:1}
+.holiday-name{font-size:.48rem;color:#94a3b8;text-align:center;word-break:break-word;max-width:100%;line-height:1.3;margin-top:2px;padding:0 2px}
 .shift-rows{display:flex;flex-direction:column;gap:1px}
 .shift-row{display:flex;align-items:center;gap:2px;min-height:14px}
 .shift-lbl{font-size:.68rem;color:var(--muted);width:18px;flex-shrink:0;line-height:1.3;font-weight:600}
@@ -587,6 +587,8 @@ function renderCalendar(){
       const fb=document.createElement('div');fb.className='holiday-badge';
       fb.innerHTML='<span class="holiday-f">F</span><span class="holiday-name">'+holiday+'</span>';
       cell.appendChild(fb);
+      grid.appendChild(cell);
+      continue;
     }
 
     const rows=document.createElement('div');rows.className='shift-rows';
