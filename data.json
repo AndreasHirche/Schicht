@@ -550,9 +550,10 @@
         "name": "",
         "color": "#ec4899",
         "vertr": 87,
-        "delta": ""
+        "delta": "0",
+        "deltaManual": true
       }
     }
   },
-  "saved": "2026-06-24T06:39:54.648Z"
+  "saved": "2026-06-24T06:39:58.932Z"
 }
