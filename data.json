@@ -523,7 +523,8 @@
         "name": "Bunzel-Hirche, Silke",
         "color": "#3b82f6",
         "vertr": 87,
-        "delta": "51,3"
+        "delta": "",
+        "deltaManual": false
       },
       "Martina": {
         "name": "Weger, Martina",
@@ -551,5 +552,5 @@
       }
     }
   },
-  "saved": "2026-06-23T21:16:31.886Z"
+  "saved": "2026-06-24T06:35:41.589Z"
 }
