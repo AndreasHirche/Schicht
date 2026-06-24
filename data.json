@@ -523,7 +523,7 @@
         "name": "Bunzel-Hirche, Silke",
         "color": "#3b82f6",
         "vertr": 87,
-        "delta": "-87",
+        "delta": "0",
         "deltaManual": true
       },
       "Martina": {
@@ -553,5 +553,5 @@
       }
     }
   },
-  "saved": "2026-06-24T06:36:03.379Z"
+  "saved": "2026-06-24T06:36:40.359Z"
 }
