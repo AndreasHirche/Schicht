@@ -543,7 +543,8 @@
         "name": "",
         "color": "#a855f7",
         "vertr": 87,
-        "delta": ""
+        "delta": "0",
+        "deltaManual": true
       },
       "Person5": {
         "name": "",
@@ -553,5 +554,5 @@
       }
     }
   },
-  "saved": "2026-06-24T06:36:40.359Z"
+  "saved": "2026-06-24T06:39:54.648Z"
 }
