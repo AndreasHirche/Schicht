@@ -530,7 +530,8 @@
         "name": "Weger, Martina",
         "color": "#f97316",
         "vertr": 87,
-        "delta": "+27,75"
+        "delta": "",
+        "deltaManual": false
       },
       "Sandra": {
         "name": "Jacob, Sandra",
@@ -552,5 +553,5 @@
       }
     }
   },
-  "saved": "2026-06-24T06:35:53.463Z"
+  "saved": "2026-06-24T06:35:57.788Z"
 }
