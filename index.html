@@ -99,16 +99,16 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
 
 /* ── APP ── */
 .app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
-.topbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+.topbar{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;
   padding:7px 10px 6px;background:var(--surface);border-bottom:1px solid var(--border);
   flex-shrink:0;gap:6px}
-.topbar-nav{display:flex;align-items:center;gap:6px;order:1}
+.topbar-nav{display:flex;align-items:center;gap:6px;order:1;flex:1;min-width:0;overflow:hidden}
 .nav-btn{padding:7px 12px;border-radius:8px;border:1px solid var(--border);
   background:rgba(255,255,255,0.05);color:var(--text);font-size:.95rem;font-weight:600;
   cursor:pointer;white-space:nowrap}
 .nav-btn:active{background:rgba(255,255,255,0.14)}
 .month-title{font-size:1.1rem;font-weight:700;white-space:nowrap;min-width:110px;text-align:center}
-.topbar-actions{display:flex;gap:5px;order:2;flex-wrap:wrap}
+.topbar-actions{display:flex;gap:5px;order:2;flex-wrap:nowrap;flex-shrink:0}
 .icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);
   background:rgba(255,255,255,0.05);color:var(--text);font-size:1.1rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center}
@@ -512,14 +512,13 @@ function renderMonthSummary(){
   if(!cont)return;
   cont.innerHTML='';
 
-  // Vormonat-Daten für Überstunden-Übertrag
+  // Vormonat für Überstunden-Übertrag
   const prevDate=new Date(curYear,curMonth-1,1);
   const prevYear=prevDate.getFullYear(), prevMon=prevDate.getMonth();
   const prevDim=new Date(prevYear,prevMon+1,0).getDate();
   const prevMd=(data[prevYear]||{})[prevMon]||{};
 
   PERSONS.forEach(p=>{
-    // Aktueller Monat
     let worked=0;
     for(let d=1;d<=dim;d++){
       const v=(md[d]||{})[p];
@@ -530,30 +529,109 @@ function renderMonthSummary(){
     const pi=settings.persons&&settings.persons[p]||{};
     const vertr=parseFloat(pi.vertr)||87;
 
-    // Vormonat-Überstunden
-    let prevWorked=0;
-    for(let d=1;d<=prevDim;d++){
-      const v=(prevMd[d]||{})[p];
-      if(v==='Urlaub')prevWorked+=3.33;
-      else if(v&&settings.shifts[v])prevWorked+=calcHours(v);
+    // Basis: manuell gesetzter delta ODER berechneter Vormonat
+    let carry=0;
+    if(pi.delta!==undefined&&pi.delta!==''){
+      carry=parseFloat(String(pi.delta).replace(',','.'))||0;
+    } else {
+      let prevWorked=0;
+      for(let d=1;d<=prevDim;d++){
+        const v=(prevMd[d]||{})[p];
+        if(v==='Urlaub')prevWorked+=3.33;
+        else if(v&&settings.shifts[v])prevWorked+=calcHours(v);
+      }
+      prevWorked=Math.round(prevWorked*100)/100;
+      carry=Math.round((prevWorked-vertr)*100)/100;
     }
-    prevWorked=Math.round(prevWorked*100)/100;
-    const prevDiff=Math.round((prevWorked-vertr)*100)/100;
 
-    const diff=Math.round((worked-vertr+prevDiff)*100)/100;
+    const diff=Math.round((worked-vertr+carry)*100)/100;
     const diffStr=(diff>0?'+':'')+diff.toString().replace('.',',');
     const cls=diff>0?'ms-pos':diff<0?'ms-neg':'ms-zero';
     const col=pColor(p);
     const chip=document.createElement('div');
     chip.className='ms-chip';
     chip.style.borderColor=col+'44';
-    const prevDiffStr=(prevDiff>0?'+':'')+prevDiff.toString().replace('.',',');
+    const carryStr=(carry>0?'+':'')+carry.toString().replace('.',',');
+    const isManual=!!(pi.deltaManual);
+
+    const deltaSpan=document.createElement('span');
+    deltaSpan.className='ms-delta '+cls;
+    if(isManual) deltaSpan.style.cssText='font-weight:900;font-style:italic';
+    deltaSpan.title=(isManual?'Manuell gesetzt: ':'Vormonat: ')+carryStr;
+    deltaSpan.textContent=diffStr;
+    // Tap/click to edit carry value
+    deltaSpan.style.cursor='pointer';
+    deltaSpan.addEventListener('click',function(e){
+      e.stopPropagation();
+      openDeltaEditor(p, carry, isManual, deltaSpan, chip);
+    });
+
     chip.innerHTML=
       `<span class="ms-name" style="color:${col}">${(pi.name||p).split(',')[1]?((pi.name||p).split(',')[1].trim().split(' ')[0]):(pi.name||p).split(' ')[0]}</span>`+
-      `<span class="ms-hours" style="color:${col}">${worked.toString().replace('.',',')}</span>`+
-      `<span class="ms-delta ${cls}" title="inkl. Vormonat ${prevDiffStr}">${diffStr}</span>`;
+      `<span class="ms-hours" style="color:${col}">${worked.toString().replace('.',',')}</span>`;
+    chip.appendChild(deltaSpan);
     cont.appendChild(chip);
   });
+}
+
+function openDeltaEditor(person, currentVal, isManual, deltaSpan, chip){
+  // Remove any existing editor
+  const existing=document.getElementById('_deltaEditor');
+  if(existing)existing.remove();
+
+  const editor=document.createElement('div');
+  editor.id='_deltaEditor';
+  editor.style.cssText='position:fixed;z-index:500;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5);min-width:200px;display:flex;flex-direction:column;gap:8px;';
+  const rect=chip.getBoundingClientRect();
+  editor.style.top=Math.min(rect.bottom+4,window.innerHeight-120)+'px';
+  editor.style.left=Math.max(0,Math.min(rect.left,window.innerWidth-210))+'px';
+
+  editor.innerHTML=
+    `<div style="font-size:.75rem;font-weight:700;color:var(--muted)">Überstunden-Übertrag</div>`+
+    `<input id="_deltaInput" type="text" inputmode="decimal" value="${currentVal>=0?'+':''}`+currentVal.toString().replace('.',',')+`"`+
+    ` style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:1rem;font-family:inherit;outline:none;text-align:right">`+
+    `<div style="display:flex;gap:6px">`+
+    `<button id="_deltaReset" style="flex:1;padding:7px;border-radius:7px;border:1px solid var(--border);background:transparent;color:#ef4444;font-size:.78rem;font-weight:600;cursor:pointer">Auto</button>`+
+    `<button id="_deltaOk" style="flex:2;padding:7px;border-radius:7px;border:none;background:var(--si);color:#fff;font-size:.82rem;font-weight:700;cursor:pointer">✓ Speichern</button>`+
+    `</div>`;
+
+  document.body.appendChild(editor);
+  const inp=document.getElementById('_deltaInput');
+  inp.focus();inp.select();
+
+  function closeEditor(){editor.remove();}
+
+  document.getElementById('_deltaOk').onclick=function(){
+    const raw=inp.value.replace(',','.').replace(/\s/g,'');
+    const val=parseFloat(raw);
+    if(!isNaN(val)){
+      if(!settings.persons)settings.persons={};
+      if(!settings.persons[person])settings.persons[person]={};
+      settings.persons[person].delta=val.toString().replace('.',',');
+      settings.persons[person].deltaManual=true;
+      saveStorage();
+      renderMonthSummary();
+    }
+    closeEditor();
+  };
+  document.getElementById('_deltaReset').onclick=function(){
+    if(!settings.persons)settings.persons={};
+    if(!settings.persons[person])settings.persons[person]={};
+    settings.persons[person].delta='';
+    settings.persons[person].deltaManual=false;
+    saveStorage();
+    renderMonthSummary();
+    closeEditor();
+  };
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Enter')document.getElementById('_deltaOk').click();
+    if(e.key==='Escape')closeEditor();
+  });
+  setTimeout(function(){
+    document.addEventListener('click',function outside(e){
+      if(!editor.contains(e.target)){closeEditor();document.removeEventListener('click',outside);}
+    });
+  },100);
 }
 
 function renderCalendar(){
@@ -791,8 +869,6 @@ function openSettings(){
         `<input id="pi_name_${p}" class="setting-time" value="${pi.name||''}">`+
         `<label style="font-size:.75rem;color:var(--muted);font-weight:600">Vertr.Std.</label>`+
         `<input id="pi_vertr_${p}" class="setting-time" type="number" value="${pi.vertr||87}">`+
-        `<label style="font-size:.75rem;color:var(--muted);font-weight:600">+/- Std.</label>`+
-        `<input id="pi_delta_${p}" class="setting-time" value="${pi.delta||''}">`+
         `</div>`;
       pc.appendChild(d);
     });
@@ -830,7 +906,8 @@ function saveSettings(){
       name:(document.getElementById('pi_name_'+p)||{value:''}).value,
       color:(document.getElementById('pi_color_'+p)||{value:COLORS_DEFAULT[p]}).value||COLORS_DEFAULT[p],
       vertr:parseFloat((document.getElementById('pi_vertr_'+p)||{value:87}).value)||87,
-      delta:(document.getElementById('pi_delta_'+p)||{value:''}).value||'',
+      delta:(settings.persons&&settings.persons[p]&&settings.persons[p].delta)||'',
+      deltaManual:!!(settings.persons&&settings.persons[p]&&settings.persons[p].deltaManual),
     };
   });
   ['Früh','Mittel','Spät'].forEach(shift=>{
