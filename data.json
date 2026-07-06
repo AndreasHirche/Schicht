@@ -495,6 +495,11 @@
           "Martina": "Früh",
           "Sandra": "Spät"
         },
+        "18": {
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät"
+        },
         "19": {
           "Silke": "Urlaub",
           "Martina": null,
@@ -585,5 +590,5 @@
       }
     }
   },
-  "saved": "2026-07-06T15:51:50.664Z"
+  "saved": "2026-07-06T15:52:07.450Z"
 }
