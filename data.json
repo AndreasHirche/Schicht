@@ -506,9 +506,9 @@
           "Sandra": "frei"
         },
         "20": {
-          "Silke": null,
-          "Martina": null,
-          "Sandra": null
+          "Silke": "Spät",
+          "Martina": "frei",
+          "Sandra": "Spät"
         }
       },
       "9": {
@@ -590,5 +590,5 @@
       }
     }
   },
-  "saved": "2026-07-06T15:52:31.824Z"
+  "saved": "2026-07-06T15:52:53.426Z"
 }
