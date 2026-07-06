@@ -450,6 +450,11 @@
           "Martina": "Früh",
           "Sandra": "frei"
         },
+        "7": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": null
+        },
         "10": {
           "Silke": "Urlaub",
           "Martina": null,
@@ -575,5 +580,5 @@
       }
     }
   },
-  "saved": "2026-07-06T15:48:45.613Z"
+  "saved": "2026-07-06T15:49:31.934Z"
 }
