@@ -549,6 +549,11 @@
           "Silke": "Spät",
           "Martina": "Mittel",
           "Sandra": "frei"
+        },
+        "31": {
+          "Silke": "Früh",
+          "Martina": "Spät",
+          "Sandra": "frei"
         }
       },
       "9": {
@@ -630,5 +635,5 @@
       }
     }
   },
-  "saved": "2026-07-06T15:55:34.778Z"
+  "saved": "2026-07-06T15:55:51.887Z"
 }
