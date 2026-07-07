@@ -206,6 +206,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
 .entry-btn.sel-ma{border-color:var(--ma);background:rgba(249,115,22,0.18);color:var(--ma)}
 .entry-btn.sel-sa{border-color:var(--sa);background:rgba(34,197,94,0.18);color:var(--sa)}
 .entry-btn:active{opacity:.7}
+.sonderzeit-input{width:100%;background:rgba(255,255,255,0.04);border:2px solid transparent;
+  border-radius:8px;color:var(--muted);font-size:.78rem;font-weight:700;font-family:inherit;
+  text-align:center;padding:8px 2px;outline:none;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.sonderzeit-input:focus{background:rgba(255,255,255,0.09);color:var(--text)}
+.sonderzeit-input.filled{border-color:currentColor;background:rgba(255,255,255,0.09);color:var(--text)}
 .sheet-btns{display:flex;gap:8px;margin-top:6px}
 .btn-cancel{flex:1;padding:11px;border-radius:10px;border:1px solid var(--border);
   background:transparent;color:var(--muted);font-size:.88rem;font-weight:600;cursor:pointer}
@@ -522,8 +527,7 @@ function renderMonthSummary(){
     let worked=0;
     for(let d=1;d<=dim;d++){
       const v=(md[d]||{})[p];
-      if(v==='Urlaub')worked+=3.33;
-      else if(v&&settings.shifts[v])worked+=calcHours(v);
+      worked+=getHours(v);
     }
     worked=Math.round(worked*100)/100;
     const pi=settings.persons&&settings.persons[p]||{};
@@ -537,8 +541,7 @@ function renderMonthSummary(){
       let prevWorked=0;
       for(let d=1;d<=prevDim;d++){
         const v=(prevMd[d]||{})[p];
-        if(v==='Urlaub')prevWorked+=3.33;
-        else if(v&&settings.shifts[v])prevWorked+=calcHours(v);
+        prevWorked+=getHours(v);
       }
       prevWorked=Math.round(prevWorked*100)/100;
       carry=Math.round((prevWorked-vertr)*100)/100;
@@ -712,6 +715,23 @@ function renderCalendar(){
       }
       rows.appendChild(row);
     });
+
+    // Sonderzeit chips in calendar
+    const customPersons=PERSONS.filter(p=>typeof entry[p]==='string'&&entry[p].startsWith('custom:'));
+    if(customPersons.length){
+      const row=document.createElement('div');row.className='shift-row time-row';
+      const lbl=document.createElement('span');lbl.className='shift-lbl';
+      lbl.textContent='Sz';lbl.style.fontSize='.6rem';lbl.style.color='#475569';lbl.style.fontWeight='700';
+      row.appendChild(lbl);
+      const chips=document.createElement('span');chips.className='shift-persons';
+      customPersons.forEach(p=>{
+        const chip=document.createElement('span');
+        chip.className='person-chip';chip.style.background=pColor(p);
+        chip.textContent=INITIALS[p];chips.appendChild(chip);
+      });
+      row.appendChild(chips);rows.appendChild(row);
+    }
+
     cell.appendChild(rows);
     grid.appendChild(cell);
   }
@@ -838,6 +858,52 @@ function renderEntryGrid(){
     const s=settings.shifts[shift];
     row(shift+(s?'<span style="font-size:.68rem;color:var(--muted);font-weight:400;display:block">'+s.start+'–'+s.end+'</span>':''),shift);
   });
+
+  // ── Sonderzeit row ──
+  const szLabel=document.createElement('div');
+  szLabel.className='entry-row-label';
+  szLabel.innerHTML='Sonderzeit<span style="font-size:.65rem;color:var(--muted);font-weight:400;display:block">von–bis</span>';
+  grid.appendChild(szLabel);
+  persons.forEach(p=>{
+    const col=pColor(p);
+    const val=editSelections[p];
+    const customVal=(typeof val==='string'&&val.startsWith('custom:'))?val.slice(7):'';
+    const inp=document.createElement('input');
+    inp.type='text';
+    inp.placeholder='9:30–15:00';
+    inp.value=customVal;
+    inp.className='sonderzeit-input'+(customVal?' filled':'');
+    inp.style.color=customVal?col:'';
+    inp.style.borderColor=customVal?col:'';
+    inp.dataset.person=p;
+    inp.addEventListener('focus',function(){
+      // deactivate shift selection for this person when editing custom time
+    });
+    inp.addEventListener('input',function(){
+      const v=inp.value.trim();
+      if(v){
+        editSelections[p]='custom:'+v;
+        inp.classList.add('filled');
+        inp.style.color=col;
+        inp.style.borderColor=col;
+      } else {
+        if(typeof editSelections[p]==='string'&&editSelections[p].startsWith('custom:'))
+          editSelections[p]=null;
+        inp.classList.remove('filled');
+        inp.style.color='';
+        inp.style.borderColor='';
+      }
+    });
+    inp.addEventListener('change',function(){
+      // normalize: replace . with : and validate
+      let v=inp.value.trim().replace(/\./g,':');
+      // auto-format "930" → "9:30"
+      if(/^\d{3,4}$/.test(v)){v=v.slice(0,-2)+':'+v.slice(-2);}
+      inp.value=v;
+      inp.dispatchEvent(new Event('input'));
+    });
+    grid.appendChild(inp);
+  });
 }
 
 
@@ -929,6 +995,21 @@ function calcHours(shift){
   const[eh,em]=s.end.split(':').map(Number);
   return Math.round(((eh*60+em-sh*60-sm)/60-s.pause)*100)/100;
 }
+function calcHoursCustom(customStr){
+  const parts=customStr.replace('–','-').split('-');
+  if(parts.length!==2)return 0;
+  const[sh,sm]=(parts[0].trim()+':00').split(':').map(Number);
+  const[eh,em]=(parts[1].trim()+':00').split(':').map(Number);
+  const h=Math.round(((eh*60+em)-(sh*60+sm))/60*100)/100;
+  return h>0?h:0;
+}
+function getHours(v){
+  if(!v)return 0;
+  if(v==='Urlaub')return 3.33;
+  if(typeof v==='string'&&v.startsWith('custom:'))return calcHoursCustom(v.slice(7));
+  return settings.shifts[v]?calcHours(v):0;
+}
+}
 function shiftTimeStr(shift){const s=settings.shifts[shift];return s?s.start+' - '+s.end:'';}
 
 // ── Print ─────────────────────────────────────────────────────────────────
@@ -961,7 +1042,7 @@ function buildPrint(){
     getPrintPersons().forEach(p=>{
       const v=e[p];
       if(v==='Urlaub'){tot[p].u++;tot[p].w+=3.33;}
-      else if(v&&settings.shifts[v])tot[p].w+=calcHours(v);
+      else if(v)tot[p].w+=getHours(v);
     });
   }
   getPrintPersons().forEach(p=>tot[p].w=Math.round(tot[p].w*100)/100);
@@ -981,6 +1062,10 @@ function buildPrint(){
       if(!v){rows+=`<td class="col-az"></td><td class="col-pa"></td><td class="col-st"></td>`;}
       else if(v==='Urlaub'){rows+=`<td class="col-az">U</td><td class="col-pa">-</td><td class="col-st">3,33</td>`;}
       else if(v==='frei'){rows+=`<td class="col-az">frei</td><td class="col-pa"></td><td class="col-st"></td>`;}
+      else if(typeof v==='string'&&v.startsWith('custom:')){
+        const cs=v.slice(7);
+        rows+=`<td class="col-az">${cs}</td><td class="col-pa">-</td><td class="col-st">${fmt(calcHoursCustom(cs))}</td>`;
+      }
       else{
         const s=settings.shifts[v];
         rows+=`<td class="col-az">${shiftTimeStr(v)}</td><td class="col-pa">${fmt(s.pause)}</td><td class="col-st">${fmt(calcHours(v))}</td>`;
