@@ -1009,7 +1009,6 @@ function getHours(v){
   if(typeof v==='string'&&v.startsWith('custom:'))return calcHoursCustom(v.slice(7));
   return settings.shifts[v]?calcHours(v):0;
 }
-}
 function shiftTimeStr(shift){const s=settings.shifts[shift];return s?s.start+' - '+s.end:'';}
 
 // ── Print ─────────────────────────────────────────────────────────────────
