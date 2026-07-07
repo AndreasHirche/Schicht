@@ -453,7 +453,7 @@
         "7": {
           "Silke": "custom:9:45-14:00",
           "Martina": "custom:16-20",
-          "Sandra": "custom:14-20"
+          "Sandra": "custom:14:30-20"
         },
         "8": {
           "Silke": "Urlaub",
@@ -672,5 +672,5 @@
       }
     }
   },
-  "saved": "2026-07-07T19:32:48.407Z"
+  "saved": "2026-07-07T19:33:03.767Z"
 }
