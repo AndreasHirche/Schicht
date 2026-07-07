@@ -99,16 +99,16 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
 
 /* ── APP ── */
 .app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
-.topbar{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;
-  padding:7px 10px 6px;background:var(--surface);border-bottom:1px solid var(--border);
-  flex-shrink:0;gap:6px}
-.topbar-nav{display:flex;align-items:center;gap:6px;order:1;flex:1;min-width:0;overflow:hidden}
-.nav-btn{padding:7px 12px;border-radius:8px;border:1px solid var(--border);
-  background:rgba(255,255,255,0.05);color:var(--text);font-size:.95rem;font-weight:600;
+.topbar{display:flex;flex-wrap:wrap;align-items:center;
+  padding:6px 10px;background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;gap:5px}
+.topbar-nav{display:flex;align-items:center;gap:5px;flex:1;min-width:0}
+.topbar-actions{display:flex;gap:5px;flex-shrink:0;margin-left:auto}
+.nav-btn{padding:7px 10px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.05);color:var(--text);font-size:.9rem;font-weight:600;
   cursor:pointer;white-space:nowrap}
 .nav-btn:active{background:rgba(255,255,255,0.14)}
-.month-title{font-size:1.1rem;font-weight:700;white-space:nowrap;min-width:110px;text-align:center}
-.topbar-actions{display:flex;gap:5px;order:2;flex-wrap:nowrap;flex-shrink:0}
+.month-title{font-size:1rem;font-weight:700;white-space:nowrap;flex:1;text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);
   background:rgba(255,255,255,0.05);color:var(--text);font-size:1.1rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center}
@@ -721,13 +721,19 @@ function renderCalendar(){
     if(customPersons.length){
       const row=document.createElement('div');row.className='shift-row time-row';
       const lbl=document.createElement('span');lbl.className='shift-lbl';
-      lbl.textContent='Sz';lbl.style.fontSize='.6rem';lbl.style.color='#475569';lbl.style.fontWeight='700';
+      lbl.textContent='⏱';lbl.style.fontSize='.7rem';lbl.style.color='#a78bfa';
       row.appendChild(lbl);
       const chips=document.createElement('span');chips.className='shift-persons';
       customPersons.forEach(p=>{
+        const timeStr=entry[p].slice(7);
         const chip=document.createElement('span');
-        chip.className='person-chip';chip.style.background=pColor(p);
-        chip.textContent=INITIALS[p];chips.appendChild(chip);
+        chip.className='person-chip';
+        chip.style.background=pColor(p);
+        chip.style.outline='2px solid #a78bfa';
+        chip.style.outlineOffset='1px';
+        chip.textContent=INITIALS[p];
+        chip.title=timeStr;
+        chips.appendChild(chip);
       });
       row.appendChild(chips);rows.appendChild(row);
     }
