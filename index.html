@@ -1275,9 +1275,9 @@ function addSwipe(el, onLeft, onRight){
   },{passive:true});
 }
 // Calendar: swipe left = next month, right = previous month
-addSwipe(document.getElementById('calGrid'),()=>changeMonth(1),()=>changeMonth(-1));
+try{addSwipe(document.getElementById('calGrid'),()=>changeMonth(1),()=>changeMonth(-1));}catch(e){}
 // Day sheet: swipe left = next day, right = previous day
-addSwipe(document.getElementById('daySheet'),()=>navigateDay(1),()=>navigateDay(-1));
+try{addSwipe(document.getElementById('daySheet'),()=>navigateDay(1),()=>navigateDay(-1));}catch(e){}
 
 // ── Init ──────────────────────────────────────────────────────────────────
 
@@ -1285,10 +1285,12 @@ addSwipe(document.getElementById('daySheet'),()=>navigateDay(1),()=>navigateDay(
 
 // ── Splash screen ─────────────────────────────────────────────────────────
 (function(){
-  const splash=document.getElementById('splash');
-  // Open curtain immediately — no gesture needed for animation
-  setTimeout(()=>splash.classList.add('splash-open'),400);
-  setTimeout(()=>splash.classList.add('done'),2100);
+  try{
+    const splash=document.getElementById('splash');
+    // Open curtain immediately — no gesture needed for animation
+    setTimeout(()=>splash.classList.add('splash-open'),400);
+    setTimeout(()=>splash.classList.add('done'),2100);
+  }catch(e){}
 })();
 
 // ── Glitter particles ─────────────────────────────────────────────────────
