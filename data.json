@@ -572,10 +572,35 @@
           "Martina": "frei",
           "Sandra": null
         },
+        "8": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": "frei"
+        },
+        "9": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": "frei"
+        },
+        "10": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": "frei"
+        },
+        "11": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": "frei"
+        },
         "12": {
           "Silke": null,
           "Martina": null,
           "Sandra": "frei"
+        },
+        "14": {
+          "Silke": "Urlaub",
+          "Martina": null,
+          "Sandra": null
         },
         "15": {
           "Silke": "Urlaub",
@@ -707,5 +732,5 @@
       }
     }
   },
-  "saved": "2026-07-22T12:04:33.471Z"
+  "saved": "2026-07-22T12:04:35.607Z"
 }
