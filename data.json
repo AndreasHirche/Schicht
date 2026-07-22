@@ -557,6 +557,21 @@
         }
       },
       "8": {
+        "1": {
+          "Silke": null,
+          "Martina": "Früh",
+          "Sandra": null
+        },
+        "2": {
+          "Silke": null,
+          "Martina": "Früh",
+          "Sandra": null
+        },
+        "3": {
+          "Silke": null,
+          "Martina": "Früh",
+          "Sandra": null
+        },
         "4": {
           "Silke": null,
           "Martina": "Früh",
@@ -671,7 +686,7 @@
         },
         "12": {
           "Silke": "frei",
-          "Martina": null,
+          "Martina": "Urlaub",
           "Sandra": null
         }
       }
@@ -732,5 +747,5 @@
       }
     }
   },
-  "saved": "2026-07-22T12:04:35.607Z"
+  "saved": "2026-07-22T12:06:14.753Z"
 }
