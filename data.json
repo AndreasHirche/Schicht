@@ -615,7 +615,7 @@
         "14": {
           "Silke": "Urlaub",
           "Martina": null,
-          "Sandra": null
+          "Sandra": "Urlaub"
         },
         "15": {
           "Silke": "Urlaub",
@@ -881,5 +881,5 @@
       }
     }
   },
-  "saved": "2026-07-26T09:22:18.397Z"
+  "saved": "2026-07-26T09:22:26.681Z"
 }
