@@ -934,6 +934,12 @@
           "Martina": null,
           "Sandra": null,
           "Person4": "Urlaub"
+        },
+        "25": {
+          "Silke": null,
+          "Martina": null,
+          "Sandra": null,
+          "Person4": "Urlaub"
         }
       },
       "11": {
@@ -1041,5 +1047,5 @@
       }
     }
   },
-  "saved": "2026-09-23T14:14:27.494Z"
+  "saved": "2026-09-23T14:14:29.538Z"
 }
