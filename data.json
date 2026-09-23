@@ -772,9 +772,10 @@
           "Person4": "Früh"
         },
         "17": {
-          "Silke": "frei",
+          "Silke": "Spät",
           "Martina": "Urlaub",
-          "Sandra": null
+          "Sandra": "Früh",
+          "Person4": "custom:12:00-16:00"
         },
         "26": {
           "Silke": null,
@@ -968,5 +969,5 @@
       }
     }
   },
-  "saved": "2026-09-23T14:05:24.128Z"
+  "saved": "2026-09-23T14:06:09.446Z"
 }
