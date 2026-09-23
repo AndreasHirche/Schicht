@@ -783,6 +783,12 @@
           "Sandra": "frei",
           "Person4": "frei"
         },
+        "20": {
+          "Silke": "Spät",
+          "Martina": "frei",
+          "Sandra": "Früh",
+          "Person4": "frei"
+        },
         "26": {
           "Silke": null,
           "Martina": null,
@@ -975,5 +981,5 @@
       }
     }
   },
-  "saved": "2026-09-23T14:06:37.117Z"
+  "saved": "2026-09-23T14:06:56.608Z"
 }
