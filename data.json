@@ -997,6 +997,12 @@
           "Martina": "Früh",
           "Sandra": "custom:12:00-16:00",
           "Person4": null
+        },
+        "30": {
+          "Silke": "Früh",
+          "Martina": "Spät",
+          "Sandra": "frei",
+          "Person4": null
         }
       },
       "11": {
@@ -1104,5 +1110,5 @@
       }
     }
   },
-  "saved": "2026-10-15T14:50:12.491Z"
+  "saved": "2026-10-15T14:50:34.916Z"
 }
