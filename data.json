@@ -927,10 +927,10 @@
           "Person4": null
         },
         "16": {
-          "Silke": null,
-          "Martina": null,
-          "Sandra": null,
-          "Person4": null
+          "Silke": "custom:14:00-22:00",
+          "Martina": "custom:18:00-22:00",
+          "Sandra": "custom:16:00-22:00",
+          "Person4": "custom:9:45-14:00 18:00-22:00"
         },
         "17": {
           "Silke": null,
@@ -1092,5 +1092,5 @@
       }
     }
   },
-  "saved": "2026-10-15T14:44:22.528Z"
+  "saved": "2026-10-15T14:45:51.303Z"
 }
