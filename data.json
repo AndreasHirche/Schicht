@@ -975,9 +975,9 @@
           "Person4": "Urlaub"
         },
         "25": {
-          "Silke": null,
-          "Martina": null,
-          "Sandra": null,
+          "Silke": "Spät",
+          "Martina": "frei",
+          "Sandra": "Früh",
           "Person4": "Urlaub"
         },
         "26": {
@@ -1098,5 +1098,5 @@
       }
     }
   },
-  "saved": "2026-10-15T14:48:10.944Z"
+  "saved": "2026-10-15T14:48:27.310Z"
 }
