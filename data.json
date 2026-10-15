@@ -890,6 +890,12 @@
           "Sandra": "Spät",
           "Person4": "Mittel"
         },
+        "9": {
+          "Silke": "Urlaub",
+          "Martina": "Früh",
+          "Sandra": "Spät",
+          "Person4": null
+        },
         "10": {
           "Silke": "Urlaub",
           "Martina": null,
@@ -1080,5 +1086,5 @@
       }
     }
   },
-  "saved": "2026-10-15T14:41:54.536Z"
+  "saved": "2026-10-15T14:42:13.732Z"
 }
